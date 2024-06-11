@@ -34,36 +34,52 @@ def draw_line(framebuffer: Framebuffer, v1: MeshVertex, v2: MeshVertex):
     """
 
     # Get the screen coordinates of the vertices
+    # These are the x, y, and depth (z) coordinates of the vertices in screen space
     x1, y1, depth1 = v1.get_screen_coordinates()
     x2, y2, depth2 = v2.get_screen_coordinates()
 
+    # Get the color of the vertices
+    # These are the RGB color values (as [0,1]) of the vertices eg (0.5, 0.5, 0.5)
+    color1 = v1.get_color()
+    color2 = v2.get_color()
+
     # Calculate the differences in x and y coordinates
+    # This is used to determine the direction and length of the line
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
 
-    # The number of steps is the maximum difference in x or y
-    steps = max(dx, dy)
-
-    # Calculate the increments in x and y for each step
-    dx /= steps if steps != 0 else dx
-    dy /= steps if steps != 0 else dy
-
-    # Start from the first vertex
+    # Set the initial point of the line as (x1,y1)
+    # This is the starting point of the line
     x = x1
     y = y1
 
-    # Loop over the steps
-    for i in range(int(steps) + 1):
-        # Calculate the interpolation coefficient
-        t = i / steps
+    # Calculate the number of steps needed to draw the line
+    # The number of steps is equal to the greatest difference in x or y coordinates
+    # This ensures that the line is drawn smoothly, without any gaps
+    steps = dx if dx > dy else dy
 
-        # Interpolate the color and depth for the current step
-        interpolated_color = v1.mix(v2, t).get_color()
-        interpolated_depth = v1.mix(v2, t).get_depth()
+    # Calculate the increment in x and y coordinates
+    # These are the amounts by which the x and y coordinates are increased in each step
+    # They are calculated as the total difference in x or y coordinates divided by the number of steps
+    x_inc = (x2 - x1) / float(steps)
+    y_inc = (y2 - y1) / float(steps)
+
+    # Draw the line by plotting the points
+    for i in range(int(steps) + 1):
+        # Interpolate the color and depth values
+        # The interpolation factor t is calculated as the current step divided by the total number of steps
+        # t is in the range [0, 1]
+        # the nearer t is to 0, the nearer the color and depth are to the values of the first vertex
+        # the nearer t is to 1, the nearer the color and depth are to the values of the second vertex
+        t = i / steps
+        color = MeshVertex.mix(color1, color2, t)
+        depth = MeshVertex.mix(depth1, depth2, t)
 
         # Set the pixel at the current coordinates with the interpolated color and depth
-        framebuffer.set_pixel(int(round(x)), int(round(y)), interpolated_depth, interpolated_color)
+        # The coordinates are rounded to the nearest integer values, as the framebuffer only accepts integer coordinates
+        framebuffer.set_pixel(np.round(x).astype(int), np.round(y).astype(int), depth, color)
 
-        # Move to the next coordinates
-        x += dx
-        y += dy
+        # Update the current coordinates
+        # The x and y coordinates are increased by their respective increments
+        x += x_inc
+        y += y_inc

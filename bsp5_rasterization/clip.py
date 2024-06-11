@@ -53,57 +53,26 @@ def clip_plane(vertex_count : int, positions : np.ndarray, colors : np.ndarray, 
             col_clipped           ... n x 3 matrix with colors of n clipped vertices
                                     one row corresponds to one vertex color"""
  
-    # Initialize arrays for storing the clipped positions and colors
-    pos_clipped = np.zeros((vertex_count + 1, 4))
-    col_clipped = np.zeros((vertex_count + 1, 3))
+    # clear output
+    pos_clipped = np.zeros((vertex_count + 1,  4))
+    col_clipped = np.zeros((vertex_count + 1,  3))
     vertex_count_clipped = 0
 
-    # Loop over all edges of the polygon
-    for i in range(vertex_count):
-        # Get the current and next vertices and their colors
-        v1 = positions[i]
-        v2 = positions[(i + 1) % vertex_count]
-        c1 = colors[i]
-        c2 = colors[(i + 1) % vertex_count]
+    ### STUDENT CODE
+    # TODO 2:   Implement this function.
+    # HINT 1: 	Read the article about Sutherland Hodgman algorithm on Wikipedia.
+    #           https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+    #           Take a look at the tutorial.ipynb file for further explanations!
+    # HINT 2: 	There is an edge between every consecutive vertex in the positions
+    #       	matrix. Note: also between the last and first entry!
+	# NOTE:     The following lines can be removed. They prevent the framework
+	#           from crashing.
 
-        # Check if the edge intersects the plane
-        inside1 = plane.inside(v1)
-        inside2 = plane.inside(v2)
+    pos_clipped = positions
+    col_clipped = colors
+    vertex_count_clipped = vertex_count
 
-        # If v1 is inside the plane and v2 is outside
-        if inside1 and not inside2:
-            # Compute the intersection point of the edge and the plane
-            t = plane.intersect(v1, v2)
-            # Compute the position and color at the intersection point
-            pos_clipped[vertex_count_clipped] = v1 * (1 - t) + v2 * t
-            col_clipped[vertex_count_clipped] = c1 * (1 - t) + c2 * t
-            vertex_count_clipped += 1
+    ### END STUDENT CODE
 
-            # Add the outside vertex to the clipped polygon
-            pos_clipped[vertex_count_clipped] = v2
-            col_clipped[vertex_count_clipped] = c2
-            vertex_count_clipped += 1
 
-        # If v2 is inside the plane and v1 is outside
-        elif inside2 and not inside1:
-            # Compute the intersection point of the edge and the plane
-            t = plane.intersect(v2, v1)
-            # Compute the position and color at the intersection point
-            pos_clipped[vertex_count_clipped] = v2 * (1 - t) + v1 * t
-            col_clipped[vertex_count_clipped] = c2 * (1 - t) + c1 * t
-            vertex_count_clipped += 1
-
-            # Add the outside vertex to the clipped polygon
-            pos_clipped[vertex_count_clipped] = v1
-            col_clipped[vertex_count_clipped] = c1
-            vertex_count_clipped += 1
-
-        # If both vertices are inside the plane
-        elif inside1 and inside2:
-            # Add the next vertex to the clipped polygon
-            pos_clipped[vertex_count_clipped] = v2
-            col_clipped[vertex_count_clipped] = c2
-            vertex_count_clipped += 1
-
-    # Return the number of vertices in the clipped polygon and the clipped positions and colors
-    return vertex_count_clipped, pos_clipped[:vertex_count_clipped], col_clipped[:vertex_count_clipped]
+    return vertex_count_clipped, pos_clipped, col_clipped

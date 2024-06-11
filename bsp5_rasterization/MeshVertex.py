@@ -31,34 +31,16 @@ class MeshVertex:
 
     @staticmethod
     def mix(a: np.ndarray, b: np.ndarray, t: np.ndarray) -> np.ndarray:
-        """
-        Interpolates the line defined by a,b at position t and returns the result.
-        
-        Parameters:
-        a: The starting point of the line.
-        b: The ending point of the line.
-        t: The position along the line to interpolate at, as a fraction of the total length.
-        
-        Returns:
-        The interpolated point along the line.
-        """
+        """Interpolates the line defined by a,b at position t and returns the result."""
+
+        # the interpolation of the line defined by a and b, the interpolation coefficient is given by t.
+        # The interpolation is done by the following formula: res = a * (1 - t) + b * t
         return a * (1 - t) + b * t
 
     @staticmethod
-    def barycentric_mix(a: np.ndarray, b: np.ndarray, c: np.ndarray, alpha: int, beta: int, gamma: int) -> np.ndarray:
-        """
-        Interpolates the triangle defined by a,b,c at barycentric coordinates alpha, beta, gamma and returns the result.
-        
-        Parameters:
-        a: The first vertex of the triangle.
-        b: The second vertex of the triangle.
-        c: The third vertex of the triangle.
-        alpha: The barycentric coordinate corresponding to vertex a.
-        beta: The barycentric coordinate corresponding to vertex b.
-        gamma: The barycentric coordinate corresponding to vertex c.
-        
-        Returns:
-        The interpolated point inside the triangle.
-        """
+    def barycentric_mix(a : np.ndarray, b : np.ndarray, c : np.ndarray, alpha : int, beta : int, gamma : int) -> np.ndarray:
+        """Interpolates the triangle defined by a,b,c at barycentric coordinates alpha, beta, gamma and returns the result."""
+
+        # The interpolation of the triangle defined by a, b, and c, the interpolation coefficients are given by alpha, beta, and gamma.
         return alpha * a + beta * b + gamma * c
 
